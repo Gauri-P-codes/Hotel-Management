@@ -1,0 +1,120 @@
+import java.util.Scanner; 
+import java.time.LocalDate; 
+public interface HotelInterfaces { 
+ Scanner sc=new Scanner(System.in); 
+ // Abstract methods to be implemented by any class that implements this interface 
+ void accept(); 
+ void display(); 
+ void update(); 
+ void search(); 
+ void out(); 
+  /** 
+    * Static method to read and validate a date from the user. 
+    * The parameter 'i' determines whether this is a "future date" check (i == 2) or not. 
+    * 
+    * @param i An indicator for type of date check. If i == 2, strict check from year 2000 
+onward. 
+    * @return A formatted date string (yyyy-MM-dd) that has been validated. 
+    */ 
+ static String date(int i){ 
+     int d,m,y;// Threshold values for validation 
+         int yt,dt,mt; // Variables for entered date 
+         // Prompting user for date input 
+     System.out.print("Enter the Date of Month  :"); 
+      d=sc.nextInt(); 
+      System.out.print("Enter the Month :"); 
+      m=sc.nextInt(); 
+      System.out.print("Enter the Year :"); 
+      y=sc.nextInt(); 
+      LocalDate a = LocalDate.now();// Get today's date 
+         int yrt=a.getYear(); // Current year 
+         int mrt= a.getMonthValue();// Current month 
+         int drt= a.getDayOfMonth();// Current day 
+         // Set minimum acceptable date values based on 'i' 
+         if(i==2) { 
+           // Case for checking only dates after 1 Jan 2000 
+          dt=1; 
+          mt=1; 
+          yt=2000; 
+         } 
+         else{ 
+          if(y>yrt) { // Allow today and any future date 
+           yt=y; 
+           mt=1; 
+           dt=1; 
+          } 
+          else if(y==yrt&&m>mrt){ 
+           dt=1; 
+           yt=yrt; 
+           mt=mrt; 
+          } 
+          else {// Use current date as lower boundary 
+           dt=drt; 
+           mt=mrt; 
+           yt=yrt; 
+          } 
+         } 
+     boolean x=false; 
+     // Loop until a valid date is entered 
+     do{ 
+     if(y>=yt){ 
+         if(m >=mt&&m<=12){ 
+          if(d>=dt&&d<=31){ 
+           // Special handling for February (leap year and day range) 
+           if(m == 2){ 
+            if((y %4)==0){ 
+             if(d>=dt&&d<=29){ 
+              x=true; 
+                         } 
+                         else{ 
+                          System.out.print("Enter the Date of Month :"); 
+                          d=sc.nextInt(); 
+                          } 
+                         } 
+                         else{ 
+                          if(d>=dt&&d<=28){ 
+                           x=true; 
+                          } 
+                          else{ 
+                           System.out.print("Enter the Date of Month :"); 
+                           d=sc.nextInt(); 
+                             } 
+                      } 
+                   } 
+           // Months with only 30 days 
+           else if(m==4||m==6||m==9||m== 11){ 
+            if(d>=dt&&d<=30){ 
+             x=true; 
+                     } 
+                     else{ 
+                      System.out.print("Enter the Date of Month :"); 
+                      d=sc.nextInt(); 
+                      } 
+                  } 
+           // All other months 
+                  else{ 
+                      x=true; 
+                      } 
+            } 
+               else{ 
+                // Invalid day 
+                    System.out.print("Enter the Date of Month :"); 
+                    d=sc.nextInt(); 
+               } 
+               } 
+               else{ 
+                // Invalid day 
+               System.out.print("Enter the Month :"); 
+                  m=sc.nextInt(); 
+                  } 
+         } 
+     else{ 
+       // Invalid day 
+      System.out.print("Enter the Year :"); 
+      y=sc.nextInt(); 
+      } 
+     }while(x==false); // Repeat until valid input is entered 
+   // Return the valid date in yyyy-MM-dd format 
+return String.format("%04d-%02d-%02d", y, m, d); 
+} 
+}
