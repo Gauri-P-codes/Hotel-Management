@@ -1,0 +1,524 @@
+import java.time.LocalDate; 
+//import java.util.InputMismatchException; 
+import java.time.LocalTime; 
+import java.time.format.DateTimeFormatter; 
+import java.util.ArrayList; 
+public class GuestHandling implements HotelInterfaces { 
+ static ArrayList<Guest> future=new ArrayList<Guest>(); 
+ static ArrayList<Guest> past=new ArrayList<Guest>(); 
+ static ArrayList<Guest> present=new ArrayList<Guest>(); 
+ static boolean[] gr=new boolean[80]; 
+ static boolean[] es=new boolean[50]; 
+ static boolean[] ss=new boolean[50]; 
+ static boolean[] ps=new boolean[20]; 
+ // Accepting the guests from which are advance booked or not 
+ @Override 
+ public void accept(){ 
+  // TODO Auto-generated method stub 
+  // Ask the user whether the guest has made a pre-booking 
+   System.out.print("Is There a Pre-booking ?(1-yes,0-no) : "); 
+   int ch=sc.nextInt(); 
+   // If the guest is a walk-in (no advance booking) 
+   if(ch==0) { 
+    // Collect guest details 
+     System.out.print("Enter the phone number to Register : 
+"); 
+     long phno=sc.nextLong(); 
+     System.out.print("Enter the Guest Name : "); 
+     String name=sc.next(); 
+     System.out.print("Enter the Authentication Id : (Aadhar 
+card/Passport/ Driving License /PAN card ) :"); 
+     String id=sc.next(); 
+     // Ask how many rooms are required 
+     System.out.print("Enter the Number of Rooms 
+Required :"); 
+     int x=sc.nextInt(); 
+     // Ask for the length of stay (must be at least 1 day) 
+     System.out.print("Enter the Length of Stay (in days) :"); 
+     int day=sc.nextInt(); 
+     while(day<0) { 
+      System.out.print("Enter the Length of Stay (in 
+days) :"); 
+      day=sc.nextInt(); 
+     } 
+     // Ask for the mode of booking (ONLINE or OFFLINE) 
+     System.out.print("Enter the Platform for booking 
+(ONLINE/OFFLINE) :"); 
+     String src; 
+     Modeofbooking mode; 
+     try { 
+      src=sc.next().toUpperCase();// Convert to 
+uppercase to match enum 
+      mode= Modeofbooking.valueOf(src);// Try to 
+parse the input to enum 
+     }catch(Exception e) { 
+      System.out.println("Booking mode is changed to 
+OFFLINE"); 
+      mode=Modeofbooking.OFFLINE; // Default to 
+OFFLINE if input is invalid 
+     } 
+      // Possibly checks and prepares room availability 
+     check(); 
+      // Repeat for each room the guest wants 
+     for(int i=1;i<=x;i++){ 
+      System.out.println("For room "+i+" : "); 
+      System.out.println("Types of Rooms Available: 
+guest_room/executive_suite/soho_suite/presidential_suite"); 
+      System.out.print("Enter  Desired Room Type :"); 
+// Ask for room type 
+      String typeRoom=sc.next(); 
+      Price per; 
+      try { 
+              per = Price.valueOf(typeRoom);// Attempt to map 
+to enum 
+          }catch (Exception e) { 
+           System.out.println("Invalid room 
+Type!\t\tChanging the room to single."); 
+               typeRoom="guest_room"; 
+                 per=Price.guest_room; 
+             } 
+       // Assign a room based on the selected type 
+       int room=room(per); 
+       if (room > -1) { 
+                    // If room available, create and add new guest to 
+present list 
+                    present.add(new Guest(name, id, typeRoom, per, 
+day, phno, mode, LocalDate.now(), LocalTime.now(), room)); 
+                    System.out.println("Details of Guest Registered!"); 
+                } else { 
+                    System.out.println("Room NOT available in the 
+selected category. Please choose another room type."); 
+                } 
+     } 
+   } 
+     else { 
+      // For guests who have pre-booked (advance 
+booking) 
+      boolean flag=false; 
+      System.out.print("Enter the Guest Name : "); 
+      String name=sc.next(); 
+      System.out.print("Enter the Phone Number to 
+Register :"); 
+      long phno=sc.nextLong(); 
+       // Search for matching guest in future bookings 
+      for(Guest i:future) { 
+       LocalDate n=i.cindate.plusDays(i.day); // 
+Calculate check-out date 
+       // Match by name and phone number 
+      
+ if(i.name.equalsIgnoreCase(name)&&i.phno==phno) { 
+        // Check if today's date is within 
+check-in and check-out range 
+        LocalDate nc=LocalDate.now(); 
+        if(nc.equals(i.cindate) || 
+nc.isAfter(i.cindate) && nc.isBefore(n)){ 
+          // Confirm guest's ID 
+         System.out.print("Enter 
+the Authentication ID : (Aadhar card/Passport/Driving License/ PAN Card ) :"); 
+         String id=sc.next(); 
+         // Move guest from future 
+to present list 
+         present.add(new 
+Guest(i,id)); 
+         flag=true; 
+        
+ System.out.println("Details Registered ! "); 
+         System.out.println("Have 
+a Nice Stay ! ") ;    
+        } 
+       } 
+      } 
+      // If no matching future booking found 
+      if(!flag) { 
+       System.out.println(" Sorry ! No Advance 
+Booking Found "); 
+      } 
+     } 
+    } 
+ // to get the date   
+  protected LocalDate date() { 
+   LocalDate date; 
+   System.out.println("Enter The Dates Of Stay  : "); 
+   String d=HotelInterfaces.date(1); 
+   try { 
+     DateTimeFormatter formatter = 
+DateTimeFormatter.ofPattern("yyyy-MM-dd"); 
+     date = LocalDate.parse(d,formatter); 
+   } 
+   catch(Exception e) { 
+     date = LocalDate.now(); 
+    System.out.println("Invalid Input.Please Retry "); 
+   } 
+   return date; 
+    
+  } 
+  // to display each room 
+  int room(Price per) { 
+   int room=0; 
+   try { 
+    switch (per) { 
+          case guest_room: 
+              for (int i = 0; i < gr.length; i++) { 
+                  if (!gr[i]) { // Find the first available room 
+                      gr[i] = true; 
+                      room =(1+i); 
+                      break; 
+                  } 
+              } 
+              break; 
+          case executive_suite: 
+              for (int i = 0; i < es.length; i++) { 
+                  if (!es[i]) { 
+                      es[i] = true; 
+                      room =(81+i); 
+                      break; 
+                  } 
+              } 
+              break; 
+          case soho_suite: 
+              for (int i = 0; i < ss.length; i++) { 
+                  if (!ss[i]) { 
+                      ss[i] = true; 
+                      room =(81+50+i); 
+                      break; 
+                  } 
+              } 
+              break; 
+          case presidential_suite: 
+              for (int i = 0; i < ps.length; i++) { 
+                  if (!ps[i]) { 
+                      ps[i] = true; 
+                      room =(81+100+i); 
+                      break; 
+                  } 
+              } 
+              break; 
+      } 
+   }catch(Exception e) { 
+    room=-1; 
+   } 
+      return room; 
+  } 
+  void check() { 
+   if(!future.isEmpty()) { 
+    for(Guest g:future) { 
+     if(check(g.cindate,g.day)) { 
+      roomrefill(g.per,g.room); 
+     } 
+    } 
+   } 
+  } 
+  //to refill the rooms 
+  protected void roomrefill(Price per,int room) { 
+   int reroom=room; 
+   switch(per) { 
+   case guest_room: 
+    if(gr[(reroom-1)]==true) { 
+     gr[(reroom-1)]=false; 
+    } 
+    break; 
+   case executive_suite: 
+    if(es[(reroom-1-80)]==true) { 
+     es[(reroom-1-80)]=false; 
+    } 
+    break; 
+   case soho_suite: 
+    if(ss[(reroom-1-80-50)]==true) { 
+     ss[(reroom-1-80-50)]=false; 
+    } 
+    break; 
+    case presidential_suite: 
+     if(ps[(reroom-1-80-50-50)]==true) { 
+      ps[(reroom-1-80-50-50)]=false; 
+     } 
+     break; 
+   } 
+  } 
+  boolean check(LocalDate n,int day) { 
+    LocalDate nc=LocalDate.now(); 
+    if(nc.isBefore(n.plusDays(day))||nc.equals(n.plusDays(day))) { 
+     return false; 
+    }else { 
+     return true; 
+    } 
+  } 
+  void print() { 
+   System.out.print("Name of Guest  \t\t Authentication ID\t Phone 
+Number \t Room Number \t Room Type " ); 
+      System.out.println("\t Length of Stay \t Platform for  booking \t Check-in 
+Date \t Check-in Time"); 
+  } 
+  // to display the data of the present guests 
+  @Override 
+  public void display() { 
+   // TODO Auto-generated method stub 
+    if(!present.isEmpty()) { 
+     print(); 
+     for(Guest i:present) { 
+      i.display(); 
+     } 
+    } 
+    else { 
+     System.out.println("No Guests Found "); 
+    } 
+   } 
+  // to display the data of the past guests 
+   void display1() { 
+   if(!past.isEmpty()) { 
+    print(); 
+    for(Guest i:past) { 
+     i.display(); 
+    } 
+   } 
+   else { 
+    System.out.println("No guest History available"); 
+   } 
+  } 
+  // for bill calculations 
+   @Override 
+  public void out() { 
+   // TODO Auto-generated method stub 
+    boolean flag=false; 
+    int m=0; 
+    ArrayList<Guest> removal=new ArrayList<>(); 
+          double total_amt=0; 
+          System.out.print("Enter Phone Number to search: "); 
+          long phno=sc.nextLong(); 
+          System.out.print("Enter Guest Name: "); 
+          String c_guest=sc.next(); 
+          System.out.print("Enter Authentication ID : "); 
+          String c_id=sc.next(); 
+ 
+         System.out.println("********************************************************************
+*********************"); 
+          System.out.println("\t\t\t\t\t\t HOTEL BILL"); 
+          System.out.println("Hotel Name: Buena Vista"); 
+          System.out.println("Location: Goa, India"); 
+          System.out.println("Contact no.: +91 9xxxxxxxxx"); 
+ 
+         System.out.println("********************************************************************
+******************"); 
+          System.out.println("Billing To: "); 
+          for(Guest p:present) 
+          { 
+              if(p.name.equals(c_guest) && c_id.equals(p.id) && phno==(p.phno)) 
+              { 
+               m++; 
+               if(m==1) { 
+                System.out.print("Name Of Guest : "+p.name+"\t 
+Authentication ID: "+p.id+"\t Phone Number : "+p.phno+"\t Check in Date : "+p.cindate); 
+                System.out.println("\t Check-in Time : "+p.cintime); 
+               } 
+                  Price amt = Price.valueOf(p.typeRoom); 
+                  System.out.println("Room Number : "+p.room+"Room Type : 
+"+p.typeRoom+" Price: "+ amt.getPrice()); 
+                  total_amt+=(amt.getPrice()*p.day); 
+                  roomrefill(p.per(),p.room); 
+                  past.add(p); 
+                  removal.add(p); 
+                  flag=true; 
+              } 
+          } 
+          if(flag) { 
+          System.out.print("\n Service Tax: 10%"); 
+          double service_tax=0.1*total_amt; 
+          System.out.println("\t\t Rs."+ service_tax); 
+          System.out.print("\n Luxury Tax: 15%"); 
+          double lux_tax=0.15*total_amt; 
+          System.out.println("\t\t "+ lux_tax); 
+          System.out.print("\n SGST: 18%"); 
+          double sgst=0.18*total_amt; 
+          System.out.println("\t\t Rs."+ sgst); 
+          System.out.print("\n CGST: 18%"); 
+          double cgst=0.18*total_amt; 
+          System.out.print("\t\t Rs."+ cgst); 
+          System.out.println("\n Total Payable Amount: Rs."+ 
+(total_amt+service_tax+lux_tax+sgst+cgst)); 
+          System.out.println("\n\nAll rates are inclusive of Taxes.Kindly make the 
+Payment within 2 weeks of your stay." + 
+                  "For any queries kindly contact us using the contact details 
+provided."); 
+          System.out.println("\n\nTHANK YOU FOR CHOOSING HOTEL BUENA 
+VISTA.DO VISIT US AGAIN!!"); 
+          System.out.println("PROVIDING BEST SERVICES ALWAYS!!! 
+\uD83D\uDE00"); 
+          remove(removal); 
+          System.out.println("Enter how much would rate us?"); 
+               System.out.println("1: Very Poor Services, isn't \"luxurious\""); 
+               System.out.println("2 : Needs a lot of improvement"); 
+               System.out.println("3 : Average Services"); 
+               System.out.println("4 : Very good"); 
+               System.out.println("5 : Excellent services and facilities, would surely visit 
+again."); 
+               int rating= sc.nextInt(); 
+               System.out.println("Please enter your feedback:"); 
+               String w=sc.nextLine(); 
+               String fb= sc.nextLine(); 
+               System.out.println("Thank you for the feedback and rating, we'll surely work on 
+it and try to provide a much better experience next time."); 
+          }else { 
+              System.out.println("Guest not found"); 
+          } 
+     } 
+   void remove(ArrayList<Guest> move) { 
+    if(!move.isEmpty()) { 
+     for(Guest p: move) { 
+      present.remove(p); 
+     } 
+    } 
+   } 
+  // to update info of the present guests 
+  @Override 
+  public void update() { 
+   // TODO Auto-generated method stub 
+   check(); 
+   System.out.print("Enter your name :"); 
+         String check_name=sc.next(); 
+         System.out.print("Enter Authentication ID Provided During booking(Aadhar 
+card/Passport/Driving License / PAN Card) :"); 
+         String check_id=sc.next(); 
+         System.out.print("Please enter the number of rooms you wish to update."); 
+         int num= sc.nextInt(); 
+         boolean check=false, avail=false; 
+         for(int j=0;j<num;j++) 
+         { 
+             System.out.println("Kindly specify the type of room you wish to update."); 
+             String room_type_updation =sc.next(); 
+             System.out.println("Enter room number:"); 
+             int room_num=sc.nextInt(); 
+             for(Guest g:present) 
+             { 
+                 if(g.typeRoom.equals(room_type_updation) && g.room!=-1) 
+                 { 
+                     avail=false; 
+                 } 
+                 else { 
+                     avail=true; 
+                 } 
+             } 
+             if(avail) 
+             { 
+                 for(Guest g:present) 
+                 { 
+                     if(g.name.equals(check_name) && g.id.equals(check_id)&& 
+g.room==room_num ) 
+                     { 
+                         g.typeRoom=room_type_updation; 
+                         g.per=Price.valueOf(room_type_updation); 
+                         g.room=room(g.per); 
+                         roomrefill(Price.valueOf(g.typeRoom),g.room); 
+                         check=true; 
+                         System.out.println("Successfully Updated!"); 
+                     } 
+                 } 
+                 if(!check) 
+                 { 
+                     System.out.println("Invalid Details"); 
+                 } 
+             } 
+             else { 
+                 System.out.println("Sorry, Room not Available. "); 
+             } 
+         } 
+  } 
+ // to search info of the present guests 
+ @Override 
+ public void search() { 
+  // TODO Auto-generated method stub 
+   boolean flag=false; 
+   System.out.println("Menu : "); 
+         System.out.println("1) Name"); 
+         System.out.println("2) Sources of Booking"); 
+         System.out.println("3) Room No."); 
+         System.out.println("4) Date"); 
+         System.out.println("5) Phone Number"); 
+         System.out.println("6) Type of Room"); 
+         System.out.print("Enter your choice : "); 
+         int ch=sc.nextInt(); 
+         switch(ch) { 
+         case 1: 
+          System.out.print("Enter Name :"); 
+             String name = sc.next(); 
+             for(Guest i:present) { 
+              if(i.name.equalsIgnoreCase(name)) { 
+               flag=true; 
+               i.display(); 
+              } 
+             } 
+             break; 
+         case 2: 
+          System.out.print("Enter Platform for  booking :"); 
+          Modeofbooking mode; 
+          try{ 
+           String sourc = sc.next(); 
+           mode=Modeofbooking.valueOf(sourc.toUpperCase()); 
+           for(Guest i:present) { 
+            if(i.mode.equals(mode)) { 
+             flag=true; 
+             i.display(); 
+            } 
+           } 
+       }catch(Exception e) { 
+        System.out.println("Invalid Input"); 
+       } 
+       break; 
+          case 3: 
+           System.out.print("Enter Room No. to search :"); 
+           int rm=sc.nextInt(); 
+           for(Guest i:present) { 
+            if(i.room==rm) { 
+             flag=true; 
+             i.display(); 
+            } 
+           } 
+           break; 
+          case 4: 
+           System.out.println("Enter the Check-in date :"); 
+           String date1=HotelInterfaces.date(2); 
+           try { 
+             DateTimeFormatter formatter = 
+DateTimeFormatter.ofPattern("yyyy-MM-dd"); 
+             LocalDate date = LocalDate.parse(date1,formatter); 
+             for(Guest i:present) { 
+              if(date.isEqual(i.cindate)) { 
+               flag=true; 
+               i.display(); 
+              } 
+             } 
+           } 
+           catch(Exception e) { 
+            System.out.println("Invalid Input"); 
+           } 
+           break; 
+          case 5: 
+           System.out.print("Enter Phone Number :"); 
+           long phno=sc.nextLong(); 
+           for(Guest i:present) { 
+            if(i.phno==phno) { 
+             flag=true; 
+             i.display(); 
+            } 
+           } 
+           break; 
+          case 6: 
+           System.out.print("Enter Type :"); 
+           Price per; 
+           try { 
+            String type= sc.next(); 
+            per = Price.valueOf(type); 
+            for(Guest i:present) { 
+             if(i.per.equals(per)) { 
+              flag=true; 
+              i.display(); 
+             } 
+            } 
+           }catch(Exception e) { 
+            System.out.println("Invalid Input"); 
+           } 
+           break; 
+           default:System.out.println("Invalid Input"); 
+          } 
+         if(!flag) { 
+          System.out.println("Guest not found"); 
+         } 
+  } 
