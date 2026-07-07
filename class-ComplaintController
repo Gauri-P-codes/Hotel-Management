@@ -1,0 +1,38 @@
+public class Complaint { 
+ void control() { 
+  // Method to control the complaint-handling menu 
+       Compliants comp = new Compliants(); 
+       while(true) { 
+         // Infinite loop to repeatedly show complaint menu until user exits or returns 
+           System.out.println("Menu : "); 
+           System.out.println("1) Accept Complaint"); 
+           System.out.println("2) Display Complaints"); 
+           System.out.println("3) Search Complaint"); 
+           System.out.println("4) Process Complaint Again or delete"); 
+           System.out.println("5) Return to main menu"); 
+           System.out.println("6) Exit"); 
+           System.out.print("Enter your choice: "); 
+           int choice=HotelInterfaces.sc.nextInt(); 
+           switch (choice) { 
+               case 1: 
+                   comp.accept(); 
+                   break; 
+               case 2: 
+                   comp.display(); 
+                   break; 
+               case 3: 
+                   comp.search(); 
+                   break; 
+               case 4: 
+                   comp.out(); 
+                   break; 
+               case 5: 
+                return; 
+               case 6: 
+                System.out.println("Thank you for choosing us! Have a great day ahead!"); 
+                   System.exit(0); 
+                   break; 
+               default: 
+                   System.out.println("Invalid choice! Please enter a valid option."); 
+           } 
+       } 
