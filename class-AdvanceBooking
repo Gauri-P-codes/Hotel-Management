@@ -1,0 +1,167 @@
+import java.time.LocalDate; 
+import java.time.LocalTime; 
+import java.time.format.DateTimeFormatter; 
+import java.util.ArrayList; 
+public class Advance_Booking extends GuestHandling { 
+ public void accept() { 
+  System.out.print("Enter the phone number :"); 
+  long phno=sc.nextLong(); 
+  System.out.print("Enter the guest name :"); 
+  String name=sc.next(); 
+  System.out.print("Enter the no. of rooms :"); 
+  int x=sc.nextInt(); 
+  System.out.print("Enter the no. of days :"); 
+  int day=sc.nextInt(); 
+  System.out.println("Enter the arrival date :"); 
+  LocalDate date= date(); 
+  for(int i=1;i<=x;i++){ 
+   System.out.println("For room "+i+" :"); 
+   System.out.println("Types of Rooms Available: 
+guest_room/executive_suite/soho_suite/presidential_suite"); 
+   System.out.println("Enter  Desired Room Type :"); 
+   String typeRoom=sc.next(); 
+   Price per; 
+   try { 
+          per = Price.valueOf(typeRoom.toLowerCase()); 
+         } catch (Exception e) { 
+             System.out.println("Invalid room type.Changing the room to guest_room."); 
+             typeRoom="guest_room"; 
+             per=Price.guest_room; 
+         } 
+   int room=room(per); 
+   System.out.println("Room Number :"+room); 
+   if(room >-1) { 
+    future.add(new Guest(name, null, typeRoom, per, day, 
+phno,Modeofbooking.ONLINE,date,LocalTime.parse("12:00:00"),room)); 
+    System.out.println("Detail Added"); 
+   } 
+   else 
+    System.out.println("Room not unavaliable in the category. 
+Please Update the room type"); 
+   } 
+  } 
+ public void display() { 
+  if(!future.isEmpty()) { 
+   System.out.println("Advance booking : "); 
+   print(); 
+   for(Guest g:future) { 
+    g.display(); 
+   } 
+  } 
+  else { 
+   System.out.println("No advance booking available"); 
+  } 
+ } 
+ void del() { 
+  if(!future.isEmpty()) { 
+   ArrayList<Guest> removal=new ArrayList<>(); 
+   System.out.print("Enter Name to search: "); 
+            String name = sc.next(); 
+            System.out.print("Enter Phone Number to search: "); 
+      long phno=sc.nextLong(); 
+      System.out.print("Enter Type to search: "); 
+      String type = sc.next(); 
+       
+      for(Guest g:future) { 
+      
+ if(g.name.equalsIgnoreCase(name)&&g.phno==phno&&g.typeRoom.equalsIgnoreCa
+se(type)) { 
+        System.out.print("Enter Room No. to search: "); 
+           int rm=sc.nextInt(); 
+        if(g.room==rm) { 
+         removal.add(g); 
+         roomrefill(g.per,g.room); 
+        } 
+       } 
+      } 
+      remove(removal); 
+     } 
+  else { 
+   System.out.println("No advance booking available"); 
+  } 
+ } 
+ void remove(ArrayList<Guest> removal) { 
+  if(!removal.isEmpty()) { 
+    for(Guest p: removal) { 
+     future.remove(p); 
+    } 
+    System.out.println("Details removed"); 
+   } 
+ } 
+ public void search() { 
+  boolean flag=false; 
+  System.out.println("Menu : "); 
+        System.out.println("1) Name"); 
+        System.out.println("2) Room No."); 
+        System.out.println("3) Date"); 
+        System.out.println("4) Phone Number"); 
+        System.out.println("5) Type of Room"); 
+        System.out.print("Enter your choice: "); 
+        int ch=sc.nextInt(); 
+        switch(ch) { 
+        case 1: 
+         System.out.print("Enter Name :"); 
+            String name = sc.next(); 
+            for(Guest i:future) { 
+             if(i.name.equalsIgnoreCase(name)) { 
+              flag=true; 
+              i.display(); 
+             } 
+            } 
+            break; 
+         case 2: 
+          System.out.print("Enter Room Number :"); 
+          int rm=sc.nextInt(); 
+          for(Guest i:future) { 
+           if(i.room==rm) { 
+            flag=true; 
+            i.display(); 
+           } 
+          } 
+          break; 
+         case 3: 
+          System.out.println("Enter the date :"); 
+          String date1=HotelInterfaces.date(2); 
+          try { 
+            DateTimeFormatter formatter = 
+DateTimeFormatter.ofPattern("yyyy-MM-dd"); 
+            LocalDate date = LocalDate.parse(date1,formatter); 
+            for(Guest i:future) { 
+             if(date.isEqual(i.cindate)) { 
+              flag=true; 
+              i.display(); 
+             } 
+            } 
+          } 
+          catch(Exception e) { 
+           System.out.print("Invalid Input"); 
+          } 
+          break; 
+         case 4: 
+          System.out.print("Enter Phone Number :"); 
+          long phno=sc.nextLong(); 
+          for(Guest i:future) { 
+           if(i.phno==phno) { 
+            flag=true; 
+            i.display(); 
+           } 
+          } 
+          break; 
+         case 5: 
+          System.out.print("Enter Type :"); 
+          String type = sc.next(); 
+          Price per = Price.valueOf(type.toLowerCase()); 
+          for(Guest i:future) { 
+           if(i.per.equals(per)) { 
+            flag=true; 
+            i.display(); 
+           } 
+          } 
+          break; 
+          default:System.out.print("Invalid Input"); 
+         } 
+        if(!flag) { 
+         System.out.print("Guest not found"); 
+        } 
+ } 
+} 
