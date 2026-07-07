@@ -1,0 +1,207 @@
+import java.util.ArrayList; 
+import java.time.LocalTime; 
+class issue{ 
+ boolean status; 
+ String name; 
+ int room; 
+ long phno; 
+ DepartmentDuty dept; 
+ LocalTime time; 
+ String complain; 
+ issue(String name,long phno,int room,String com,boolean status,DepartmentDuty 
+dept){ 
+  this.name=name; 
+  this.phno=phno; 
+  this.room=room; 
+  complain=com; 
+  this.status=status; 
+  this.dept=dept; 
+ } 
+ void display(){ 
+ 
+ System.out.println(name+"\t"+phno+"\t"+room+"\t"+dept+"\t"+complain+"\t"+stat
+us); 
+ } 
+} 
+public class Compliants extends StaffHandling { 
+ static ArrayList<issue> list=new ArrayList<>(); 
+  public void accept() { 
+   System.out.print("Enter the Guest phone number : "); 
+   long phno=sc.nextLong(); 
+   System.out.print("Enter the Guest Name : "); 
+   String name=sc.next(); 
+   System.out.print("Enter the room number : "); 
+   int room=sc.nextInt(); 
+   boolean flag=false; 
+   for(Guest i:GuestHandling.present) { 
+            if(i.phno==phno && i.name.equalsIgnoreCase(name) && i.room==room) { 
+             flag=true; 
+             System.out.println("Complaints regarding : "); 
+     System.out.println("1) House 
+Keeping(house_keeping)"); 
+     System.out.println("2) Food Catch(waiter)"); 
+     System.out.println("3) Maintenance"); 
+     System.out.println("4) Butler"); 
+     System.out.println("5) Laundry"); 
+     System.out.println("6) Manager"); 
+     System.out.println("7) Other(receptionist)"); 
+     System.out.println("Enter your choice : "); 
+     int ch=sc.nextInt(); 
+     System.out.println("What is your complaint ? : "); 
+     String com=sc.next().trim(); 
+     DepartmentDuty dep; 
+     System.out.println("Your complaint is noted."); 
+     switch (ch) { 
+           case 1: 
+            dep= DepartmentDuty.house_keeping; 
+               break; 
+           case 5: 
+               dep= DepartmentDuty.house_keeping; 
+               break; 
+           case 2: 
+            dep= DepartmentDuty.waiter; 
+               break; 
+           case 3: 
+            dep= DepartmentDuty.maintenance; 
+               break; 
+           case 4: 
+            dep= DepartmentDuty.butler; 
+               break; 
+           case 6: 
+            dep= DepartmentDuty.manager; 
+               break; 
+           default: 
+            dep= DepartmentDuty.receptionist; 
+       } 
+    boolean status=check(dep); 
+    list.add(new issue(name,phno,room,com,status,dep)); 
+    if(!status) { 
+           System.out.println("Sorry! Currently No Staff Available."); 
+          } 
+           } 
+ } 
+ if(!flag) { 
+     System.out.println("No guest found! Retry again."); 
+  } 
+ } 
+  boolean check(DepartmentDuty dep) { 
+   int m=0,per=-1; 
+   boolean check=false; 
+   int sh=shift(LocalTime.now()); 
+   for (Staff k:presents){ 
+    if (k.dept.equals(dep) &&k.x>=m && k.sh==sh){ 
+              m = k.x; 
+              per = presents.indexOf(k); 
+           } 
+    } 
+    if (per >= 0) { 
+             Staff j = presents.get(per); 
+             j.x += 1; 
+             check=true; 
+             System.out.println(j.name + " will be helping you shortly.\nThank you."); 
+         } 
+   return check; 
+  } 
+  public void display() { 
+   if(!list.isEmpty()) { 
+    System.out.println("Complaint list : "); 
+    System.out.println("Guest Name\tPhone Number\tRoom 
+Number\tDepartment\tComplain\tStatus"); 
+    for(issue i:list) { 
+     i.display(); 
+    } 
+   } 
+   else { 
+    System.out.println("No complaints yet"); 
+   } 
+  } 
+  public void search() { 
+   boolean flag=false; 
+   System.out.println("MENU : "); 
+   System.out.println("1) Name"); 
+   System.out.println("2) Room"); 
+   System.out.println("3) Department regarding"); 
+   System.out.println("Enter the choice : "); 
+   int ch=sc.nextInt(); 
+   switch(ch){ 
+   case 1: 
+    System.out.println("Enter the name : "); 
+    String n=sc.next(); 
+    for(issue i:list) { 
+     if(i.name.equalsIgnoreCase(n)) { 
+      flag=true; 
+      i.display(); 
+     } 
+    } 
+    break; 
+   case 2: 
+    System.out.println("Enter the room : "); 
+    int room=sc.nextInt(); 
+    for(issue i:list) { 
+     if(i.room==room) { 
+      flag=true; 
+      i.display(); 
+     } 
+    } 
+    break; 
+   case 3: 
+    System.out.println("Enter the complaint regarding which 
+department : "); 
+    String dep=sc.next(); 
+    try { 
+          DepartmentDuty dept=DepartmentDuty.valueOf(dep); 
+          for(issue j:list) { 
+              if(j.dept.equals(dept)) { 
+               flag=true; 
+               j.display(); 
+               } 
+           } 
+    }catch(Exception e) { 
+     System.out.println("Invalid Input"); 
+     System.out.println("Departments are 
+house_keeping,manager,waiter,receptionist,bulter,maintenance"); 
+    } 
+   default:System.out.println("Invalid Input"); 
+   } 
+   if(!flag) { 
+    System.out.println("No Guest Found"); 
+   } 
+  } 
+  public void out() { 
+   boolean flag=false; 
+   System.out.print("Enter the Guest phone number : "); 
+   long phno=sc.nextLong(); 
+   System.out.print("Enter the Guest Name : "); 
+   String name=sc.next(); 
+   System.out.print("Enter the room number : "); 
+   int room=sc.nextInt(); 
+   System.out.print("Department regarding : "); 
+   DepartmentDuty 
+dep=DepartmentDuty.valueOf(sc.next().toLowerCase()); 
+   for(issue i:list) { 
+   
+ if(i.name.equalsIgnoreCase(name)&&i.phno==phno&&i.room==room&&i.dept==dep
+&& i.status==false) { 
+     flag=true; 
+     System.out.println(i.complain); 
+     System.out.println("Do you want to retry? Enter Y 
+for yes"); 
+     char a=sc.next().charAt(0); 
+     if(a=='Y'||a=='y') { 
+      if(!check(dep)) { 
+       System.out.println("Sorry! No Staff 
+Available."); 
+      } 
+      else { 
+       i.status=true; 
+      } 
+     }else { 
+      list.remove(i); 
+     } 
+    } 
+   } 
+   if(!flag) { 
+    System.out.println("No complaint found"); 
+   } 
+  } 
+ } 
