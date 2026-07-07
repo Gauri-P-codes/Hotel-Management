@@ -1,0 +1,331 @@
+import java.time.LocalDate; 
+import java.time.LocalTime; 
+import java.util.InputMismatchException; 
+import java.time.format.DateTimeFormatter; 
+import java.util.ArrayList; 
+import java.util.HashMap; 
+public class StaffHandling implements HotelInterfaces{ 
+ static ArrayList<Staff> presents=new ArrayList<Staff>(); 
+ static ArrayList<Staff> pasts=new ArrayList<Staff>(); 
+ static HashMap<DepartmentDuty, Integer> uid=new HashMap<>(); 
+ StaffHandling(){ 
+  uid.put(DepartmentDuty.chef, 0); 
+  uid.put(DepartmentDuty.house_keeping, 0); 
+  uid.put(DepartmentDuty.maintenance, 0); 
+  uid.put(DepartmentDuty.waiter, 0); 
+  uid.put(DepartmentDuty.receptionist, 0); 
+  uid.put(DepartmentDuty.butler, 0); 
+  uid.put(DepartmentDuty.security, 0); 
+  uid.put(DepartmentDuty.manager,0); 
+ } 
+ int shift(LocalTime time) { 
+  if((time.equals(LocalTime.of(7, 0)))||(time.isBefore(LocalTime.of(15, 
+0))&&time.isAfter(LocalTime.of(7, 0)))){ 
+   return 1; 
+  } 
+  else if((time.equals(LocalTime.of(15, 0)))||time.isBefore(LocalTime.of(23, 
+0))&&time.isAfter(LocalTime.of(15, 0))) { 
+   return 2; 
+  } 
+  else if((time.equals(LocalTime.of(23, 0)))||time.isBefore(LocalTime.of(7, 
+0))&&time.isAfter(LocalTime.of(23, 0))){ 
+   return 3; 
+  } 
+  else { 
+   return -1; 
+  } 
+ } 
+ private String uid1(String dept) { 
+  try { 
+  DepartmentDuty d=DepartmentDuty.valueOf(dept); 
+  uid.put(d,uid.get(d)+1); 
+  String cast=d.toString().charAt(0)+uid.get(d).toString(); 
+  return cast.toUpperCase(); 
+  } 
+  catch(Exception e){ 
+   System.out.println("Invalid Input."); 
+   return null; 
+  } 
+ } 
+ @Override 
+ public void accept() { 
+  // TODO Auto-generated method stub 
+  System.out.print("Enter your name :"); 
+  String name=sc.next(); 
+  System.out.print("Enter the phone number :"); 
+  long phno=sc.nextLong(); 
+  System.out.print("Enter the identification card (Adhaar card/Passport/Diving 
+License) :"); 
+     String id=sc.next(); 
+     System.out.println("Types of Department 
+:\nchef/house_keeping/manager/waiter/receptionist/bulter/security/maintenance"); 
+  System.out.print("Enter your department :"); 
+     String dept=sc.next(); 
+     try { 
+      DepartmentDuty dep =DepartmentDuty.valueOf(dept.toLowerCase()); 
+      System.out.print("UID :"); 
+      String x=uid1(dept); 
+      System.out.println(x); 
+      System.out.println("Enter the hire date :"); 
+      String d=HotelInterfaces.date(2); 
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM
+dd"); 
+      LocalDate hire = LocalDate.parse(d,formatter); 
+      double sal=DepartmentDuty.valueOf(dept).get(); 
+      System.out.print("Enter the shift(1/2/3)  "); 
+      int sh=sc.nextInt(); 
+      if(sh>0&&sh<4) { 
+       presents.add(new Staff(name,id,dep,x,hire,sal,phno,0,sh)); 
+       System.out.println("Detail Added"); 
+      } 
+      else { 
+       System.out.println("Invalid Input"); 
+      } 
+     }catch(Exception e) { 
+      System.out.println("Invalid Department category."); 
+     } 
+ } 
+ void print() { 
+  System.out.println("Details : "); 
+  System.out.println("Name\t\tAuthentication Id\tPhone 
+Number\tDepartment\tUID\tSalary\tShift\tHire Date"); 
+ } 
+ @Override 
+ public void display() { 
+  // TODO Auto-generated method stub 
+  if(!presents.isEmpty()) { 
+   print(); 
+         for(Staff ob1:presents){ 
+          ob1.display(); 
+         } 
+  }else { 
+   System.out.println("No Staff available"); 
+  } 
+ } 
+ 
+ @Override 
+ public void update() { 
+  // TODO Auto-generated method stub 
+  boolean flag=false; 
+  System.out.println("Menu : "); 
+        System.out.println("1) Phone Number"); 
+        System.out.println("2) Name"); 
+        System.out.println("3) Department"); 
+        System.out.println("4) Hire Date"); 
+        System.out.println("5) Shift"); 
+        System.out.print("Enter your choice: "); 
+        int ch=sc.nextInt(); 
+        System.out.print("Enter Phone Number : "); 
+        long phno = sc.nextLong(); 
+        System.out.print("Enter Name : "); 
+        String name = sc.next(); 
+        switch(ch) { 
+        case 1: 
+            for(Staff j:presents) { 
+             if(j.phno==phno){ 
+              System.out.print("Enter Phone Number :"); 
+                    long phno1 = sc.nextLong(); 
+              j.phno=phno1; 
+              System.out.println("Update Successful"); 
+              j.display(); 
+              flag=true; 
+             } 
+            } 
+            break; 
+        case 2: 
+            for(Staff j:presents) { 
+             if(j.name.equalsIgnoreCase(name)) { 
+              System.out.print("Enter Name to updated : "); 
+              String name1=sc.next(); 
+              j.name=name1; 
+              System.out.println("Update Successful"); 
+              j.display(); 
+              flag=true; 
+             } 
+            } 
+            break; 
+        case 3: 
+         System.out.print("Enter the Department :"); 
+         String dep=sc.next(); 
+         try { 
+          DepartmentDuty 
+dept=DepartmentDuty.valueOf(dep.toLowerCase()); 
+          for(Staff j:presents) { 
+              if(j.dept.equals(dept)&&j.name.equalsIgnoreCase(name)&&j.phno==phno) { 
+               pasts.add(j); 
+               System.out.println("Enter Department to update : "); 
+               String dep1=sc.next(); 
+               j.dept=DepartmentDuty.valueOf(dep1); 
+               j.suid=uid1(dep1); 
+               System.out.println("UID :\n"+j.suid); 
+               System.out.println("Update Successful"); 
+               j.display(); 
+               flag=true; 
+              } 
+             } 
+         }catch(Exception e) { 
+          System.out.println("Invalid Input"); 
+         } 
+         break; 
+        case 4: 
+         System.out.print("Enter the Hire date :"); 
+   String hdate1=HotelInterfaces.date(2); 
+   try { 
+     DateTimeFormatter formatter1 = 
+DateTimeFormatter.ofPattern("yyyy-MM-dd"); 
+     LocalDate hire = LocalDate.parse(hdate1,formatter1); 
+     for(Staff j:presents) { 
+      
+if(hire.isEqual(j.hire)&&j.name.equalsIgnoreCase(name)&&j.phno==phno) { 
+       System.out.print("Enter the date to update 
+: "); 
+       String hdate2=HotelInterfaces.date(2); 
+       LocalDate hire1 = 
+LocalDate.parse(hdate2,formatter1); 
+       j.hire=hire1; 
+       System.out.println("Update Successful"); 
+       j.display(); 
+       flag=true; 
+      }  
+     } 
+   } 
+   catch(Exception e) { 
+    System.out.print("Invalid Input"); 
+   } 
+         break; 
+        case 5: 
+         System.out.print("Enter the shift : "); 
+         int sh=sc.nextInt(); 
+         for(Staff j:presents) { 
+             if(j.sh==sh&&j.name.equals(name)&&j.phno==phno) { 
+              System.out.println("Enter the shift to be update into : "); 
+              int shift=sc.nextInt(); 
+              j.sh=shift; 
+              j.display(); 
+              System.out.println("Update Successful"); 
+              flag=true; 
+             } 
+         } 
+         break; 
+        default: System.out.println("Inavalid Input");  
+        } 
+        if(!flag) { 
+         System.out.println("Details not exists"); 
+        } 
+ } 
+ @Override 
+ public void out() { 
+  // TODO Auto-generated method stub 
+  boolean flag=false; 
+  System.out.print("Enter Name :"); 
+        String name = sc.next(); 
+        System.out.print("Enter UID :"); 
+  String uid11=sc.next(); 
+  for(Staff j:presents) { 
+  
+ if(j.suid.equals(uid11.toUpperCase())&&j.name.equalsIgnoreCase(name)) { 
+    flag=true; 
+    presents.remove(j); 
+    pasts.add(j); 
+    System.out.println("Removal Successful"); 
+    break; 
+   } 
+  } 
+  if(!flag) { 
+   System.out.println("Employee not found"); 
+  } 
+ } 
+ @Override 
+ public void search() { 
+  // TODO Auto-generated method stub 
+  boolean flag=false; 
+  System.out.println("Menu : "); 
+        System.out.println("1) UID"); 
+        System.out.println("2) Name"); 
+        System.out.println("3) Department"); 
+        System.out.println("4) Salary"); 
+        System.out.println("5) Hire Date"); 
+        System.out.print("Enter your choice: "); 
+        int ch=sc.nextInt(); 
+        switch(ch) { 
+        case 1: 
+         System.out.print("Enter UID :"); 
+            String uid = sc.next(); 
+            for(Staff j:presents) { 
+             if(j.suid.equals(uid.toUpperCase())) { 
+              flag=true; 
+              j.display(); 
+             } 
+            } 
+            break; 
+        case 2: 
+         System.out.print("Enter Name :"); 
+            String name = sc.next(); 
+            for(Staff j:presents) { 
+             if(j.name.equalsIgnoreCase(name)) { 
+              flag=true; 
+              j.display(); 
+             } 
+            } 
+            break; 
+        case 3: 
+         System.out.print("Enter Department :"); 
+            String dept = sc.next(); 
+            try { 
+             DepartmentDuty dep =DepartmentDuty.valueOf(dept.toLowerCase()); 
+             for(Staff j:presents) { 
+              if(j.dept.equals(dep)) { 
+               flag=true; 
+               j.display(); 
+              } 
+             } 
+            }catch(Exception e) { 
+             System.out.println("Invalid Input"); 
+            } 
+            break; 
+        case 4: 
+         System.out.print("Enter Salary :"); 
+            double sal = sc.nextInt(); 
+            for(Staff j:presents) { 
+             if(j.sal==sal) { 
+              flag=true; 
+              j.display(); 
+             } 
+            } 
+            break; 
+        case 5: 
+         System.out.print("Enter the Hiring date :"); 
+      String hdate1=HotelInterfaces.date(2); 
+      try { 
+        DateTimeFormatter formatter1 = 
+DateTimeFormatter.ofPattern("yyyy-MM-dd"); 
+        LocalDate hire = LocalDate.parse(hdate1,formatter1); 
+        for(Staff j:presents) { 
+         if(hire.isEqual(j.hire)) { 
+          flag=true; 
+          j.display(); 
+         } 
+        } 
+      } 
+      catch(Exception e) { 
+       System.out.print("Invalid Input"); 
+      } 
+      break; 
+        case 6: 
+         System.out.print("Enter the shift :"); 
+         int sh=sc.nextInt(); 
+         for(Staff j:presents) { 
+          if(sh==j.sh) { 
+           flag=true; 
+           display(); 
+          } 
+         } 
+         break; 
+        default: 
+         System.out.println("Invalid choice"); 
+        } 
+        if(!flag) { 
+         System.out.println("Details not exists"); 
+        } 
+ } 
+} 
