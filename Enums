@@ -1,0 +1,21 @@
+// Enum representing different room types along with their respective prices 
+enum Price { 
+guest_room(5000), // Standard guest room priced at 5000 
+executive_suite(9000), // Executive suite priced at 9000 
+soho_suite(4500), // Soho suite priced at 4500 
+presidential_suite(6000); // Presidential suite priced at 6000 
+// Instance variable to store the price of each room type 
+protected double price; 
+// Constructor to assign price to each room type (acts like a setter) 
+Price(double price) { 
+this.price = price; 
+} 
+// Getter method to return the price of the room 
+public double getPrice() { 
+return price; 
+} 
+}
+// Enum representing the booking mode: either OFFLINE or ONLINE 
+enum Modeofbooking { 
+OFFLINE,ONLINE; 
+}
