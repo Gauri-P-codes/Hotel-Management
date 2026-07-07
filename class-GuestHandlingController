@@ -1,0 +1,62 @@
+public class GuesthandlingController { 
+ GuestHandling a1=new GuestHandling(); 
+ Advance_Booking a2=new Advance_Booking(); 
+  void gmain() { 
+   while(true) { 
+    System.out.println("1)  Accept Guest"); 
+             System.out.println("2)  Display All Guests"); 
+             System.out.println("3)  Search Guest"); 
+             System.out.println("4)  Update Guest Details"); 
+             System.out.println("5)  Guest Checkout"); 
+             System.out.println("6)  Advance Booking"); 
+             System.out.println("7)  Search in the advance booking"); 
+             System.out.println("8)  Display all the advance booking"); 
+             System.out.println("9)  Delete advance booking"); 
+             System.out.println("10)  Display Past Guests"); 
+             System.out.println("11) Go back to Main Menu."); 
+             System.out.println("12) Exit"); 
+             System.out.print("Enter your choice: "); 
+             int ch = HotelInterfaces.sc.nextInt(); 
+             switch (ch) { 
+                 case 1: 
+                     a1.accept(); 
+                     break; 
+                 case 2: 
+                     a1.display(); 
+                     break; 
+                 case 3: 
+                     a1.search(); 
+                     break; 
+                 case 4: 
+                     a1.update(); 
+                     break; 
+                 case 5: 
+                     a1.out(); 
+                     break; 
+                 case 6: 
+                     a2.accept(); 
+                     break; 
+                 case 7: 
+                  a2.search(); 
+                  break; 
+                 case 8: 
+                     a2.display(); 
+                     break; 
+                 case 9: 
+                  a2.del(); 
+                  break; 
+                 case 10: 
+                  a1.display1(); 
+                     break; 
+                 case 11:   
+                  return; 
+                 case 12: 
+                  System.out.println("Thank you for choosing us! Have a great day 
+ahead!"); 
+                  System.exit(0); 
+                 default: 
+                     System.out.println("Invalid choice."); 
+             } 
+         } 
+  } 
+}
