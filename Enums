@@ -19,3 +19,14 @@ return price;
 enum Modeofbooking { 
 OFFLINE,ONLINE; 
 }
+public enum DepartmentDuty { 
+ house_keeping(8000.0), maintenance(5000.0), chef(20000.0), 
+security(10000.0),receptionist(15000.0),butler(4000.0), manager(30000.0), waiter(7000.0); 
+ private double sal; 
+ DepartmentDuty(double sal){ 
+  this.sal=sal; 
+ } 
+ double get() { 
+  return sal; 
+ } 
+} 
