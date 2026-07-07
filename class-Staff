@@ -1,0 +1,26 @@
+import java.time.LocalDate; 
+class Staff extends Person { 
+ DepartmentDuty dept; 
+ String suid,com; 
+ LocalDate hire; 
+ double sal; 
+ int x,sh; 
+ Staff(String name, String id,DepartmentDuty dept,String uid,LocalDate hire,double 
+sal,long phno,int x,int sh) { 
+  // TODO Auto-generated constructor stub 
+  super(name, id,phno); 
+  this.dept=dept; 
+  this.hire=hire; 
+  this.suid=uid; 
+  this.sal=sal; 
+  this.x=0; 
+  this.sh=sh; 
+ } 
+ @Override 
+ void display() { 
+  // TODO Auto-generated method stub 
+ 
+ System.out.println(name+"  "+id+"\t"+"\t"+phno+"\t"+suid+"\t"+dept+"\t"+sal+"\t"
++sh+"\t\t"+hire); 
+ } 
+} 
