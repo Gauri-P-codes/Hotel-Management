@@ -1,0 +1,61 @@
+import java.time.LocalDate; 
+import java.time.LocalTime; 
+//Abstract base class representing a generic person (could be a guest, staff, etc.) 
+abstract class Person { 
+   String name, id; 
+   long phno; 
+   // Default constructor 
+   Person(){} 
+   // Parameterized constructor 
+   Person(String name, String id,long phno) { 
+       this.name = name; 
+       this.phno=phno; 
+       this.id = id; 
+   } 
+   // Abstract method that must be implemented by subclasses to display person details 
+   abstract void display(); 
+} 
+//Class representing a Guest, which extends Person and adds booking-specific details 
+class Guest extends Person { 
+ String typeRoom; // Type of room booked (e.g., guest_room, suite, etc.) 
+   Modeofbooking mode; // Mode of booking (ONLINE or OFFLINE) 
+   int day, room, x; // Length of stay in days, room number, and unused field x 
+   LocalTime cintime; // Check-in time 
+   LocalDate cindate; // Check-in date 
+   Price per; // Price enum indicating the cost of the room 
+   // Default constructor 
+   Guest() {} 
+   // Constructor to fully initialize a guest booking 
+   Guest(String name, String id,String typeRoom,Price per,int day,long phno,Modeofbooking 
+mode, LocalDate cindate,LocalTime cintime,int room) { 
+       super(name,id,phno); // Call to superclass constructor (Person) 
+       this.typeRoom = typeRoom; 
+       this.per=per; 
+       this.day = day; 
+       this.mode = mode; 
+       this.cindate = cindate; 
+       this.cintime = cintime; 
+       this.room=room; 
+   } 
+// Constructor to register a guest who has already pre-booked (future to present transition) 
+   Guest(Guest a,String id){ 
+    super(a.name,id,a.phno); 
+    this.per=a.per; 
+       this.day = a.day; 
+       this.mode =a.mode; 
+       this.typeRoom=a.typeRoom; 
+       this.cindate = a.cindate; 
+       this.cintime = a.cintime; 
+       this.room=a.room; 
+   } 
+   // Method to display guest details in tabular format 
+   @Override 
+   void display() { 
+     System.out.println(name+"\t"+id+"\t"+phno+"\t"+room+"\t"+typeRoom+"\t"+day
++"\t"+mode+"\t"+cindate+"\t"+cintime); 
+   } 
+   // Getter for the room price 
+   Price per() { 
+    return per; 
+   }  
+} 
