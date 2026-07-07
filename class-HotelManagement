@@ -1,0 +1,54 @@
+public class HotelManagement { 
+ // Static block executes first when the class is loaded 
+ static { 
+   // Welcome message for the hotel system 
+       System.out.println("\t\t\t\t\t\t\t\t\t WELCOME TO HOTEL BUENA VISTA!!!"); 
+       System.out.println("Our award-winning hotel doesn't just provide you extravagant 
+amenities and luxuries," + 
+               "it gives an overwhelming experience, something to remember by....."); 
+       // Automatically calling main method on class load (unconventional, but allowed) 
+       main(null); 
+   } 
+ // Main method: the entry point for the application 
+public static void main(String[] args) { 
+ // TODO Auto-generated method stub 
+ // Infinite loop to keep showing the main menu until user exits 
+ while(true){ 
+   // Display main menu options 
+   System.out.println("This is our Main Menu:"); 
+   System.out.println("1.All About Guests "); 
+   System.out.println("2.All About Staff "); 
+   System.out.println("3.Complains"); 
+   System.out.println("4.Exit."); 
+   System.out.print("Enter choice :");// Prompt user for a choice 
+   int choice=HotelInterfaces.sc.nextInt(); 
+   switch(choice){ 
+    case 1: 
+      // Create and invoke Guest Management controller 
+     GuesthandlingController ghc=new 
+GuesthandlingController(); 
+           ghc.gmain(); 
+           break; 
+        case 2: 
+         // Create and invoke Staff Management controller 
+         StaffHandlingController shc=new StaffHandlingController(); 
+            shc.controller(); 
+            break; 
+        case 3: 
+         // Create and invoke Complaints handler 
+         Complaint c=new Complaint(); 
+         c.control(); 
+         break; 
+        case 4: 
+          // Exit the system 
+             System.out.println("Thank you for choosing us! Have a great 
+day ahead!"); 
+             System.exit(0); 
+             break; 
+        default: 
+         // Handle invalid inputs 
+             System.out.println("Invalid input!"); 
+       } 
+   } 
+  } 
+}
