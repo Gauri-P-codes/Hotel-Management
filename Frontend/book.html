@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book a Room — Hotel Buena Vista</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background: #f4f4f4;
+          display: flex;
+          justify-content: center;
+          padding: 40px;
+        }
+        .card {
+          background: white;
+          padding: 30px 40px;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          width: 350px;
+        }
+        h2 { margin-top: 0; color: #2c3e50; }
+        label { display: block; margin-top: 15px; font-size: 14px; color: #555; }
+        input, select {
+          width: 100%;
+          padding: 8px;
+          margin-top: 5px;
+          box-sizing: border-box;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+        }
+        button {
+          margin-top: 20px;
+          width: 100%;
+          padding: 10px;
+          background: #2c3e50;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 15px;
+        }
+        button:hover { background: #1a252f; }
+        #result {
+          margin-top: 15px;
+          padding: 10px;
+          border-radius: 4px;
+          font-size: 14px;
+          display: none;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        a { display: inline-block; margin-top: 15px; font-size: 13px; color: #2c3e50; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Book a Room</h2>
+    <form id="bookingForm">
+        <label>Guest Name</label>
+        <input type="text" id="name" required>
+
+        <label>Phone Number</label>
+        <input type="number" id="phno" required>
+
+        <label>Room Type</label>
+        <select id="type">
+            <option value="guest_room">Guest Room</option>
+            <option value="executive_suite">Executive Suite</option>
+            <option value="soho_suite">Soho Suite</option>
+            <option value="presidential_suite">Presidential Suite</option>
+        </select>
+
+        <label>Check-in Date</label>
+        <input type="date" id="checkin" required>
+
+        <label>No. of Days</label>
+        <input type="number" id="days" min="1" required>
+
+        <button type="submit">Book Now</button>
+    </form>
+    <div id="result"></div>
+    <a href="bookings.html">View All Bookings →</a>
+</div>
+
+<script>
+    document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const phno = document.getElementById('phno').value;
+      const type = document.getElementById('type').value;
+      const checkin = document.getElementById('checkin').value;
+      const days = document.getElementById('days').value;
+
+      const body = `name=${encodeURIComponent(name)}&phno=${phno}&type=${type}&checkin=${checkin}&days=${days}`;
+
+      const resultDiv = document.getElementById('result');
+
+      try {
+        const response = await fetch('http://localhost:8080/bookings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: body
+        });
+        const data = await response.json();
+
+        resultDiv.style.display = 'block';
+        if (data.success) {
+          resultDiv.className = 'success';
+          resultDiv.textContent = `Booked! Room number: ${data.room}`;
+          document.getElementById('bookingForm').reset();
+        } else {
+          resultDiv.className = 'error';
+          resultDiv.textContent = data.message || 'Booking failed.';
+        }
+      } catch (err) {
+        resultDiv.style.display = 'block';
+        resultDiv.className = 'error';
+        resultDiv.textContent = 'Could not reach server. Is Server.java running?';
+      }
+    });
+</script>
+
+</body>
+</html>

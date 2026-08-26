@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>All Bookings — Hotel Buena Vista</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background: #f4f4f4;
+          padding: 40px;
+        }
+        .container {
+          background: white;
+          padding: 30px;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+          max-width: 900px;
+          margin: 0 auto;
+        }
+        h2 { color: #2c3e50; }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 20px;
+        }
+        th, td {
+          padding: 10px;
+          text-align: left;
+          border-bottom: 1px solid #eee;
+          font-size: 14px;
+        }
+        th { background: #2c3e50; color: white; }
+        tr:hover { background: #f9f9f9; }
+        a { display: inline-block; margin-bottom: 10px; font-size: 13px; color: #2c3e50; }
+        #empty { color: #888; margin-top: 15px; }
+        .cancel-btn {
+          background: #e74c3c;
+          color: white;
+          border: none;
+          padding: 5px 10px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 13px;
+        }
+        .cancel-btn:hover { background: #c0392b; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="book.html">← Back to Booking Form</a>
+    <h2>All Bookings</h2>
+    <table id="bookingsTable">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Room No.</th>
+            <th>Room Type</th>
+            <th>Check-in</th>
+            <th>Check-out</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody id="bookingsBody"></tbody>
+    </table>
+    <div id="empty" style="display:none;">No bookings yet.</div>
+</div>
+
+<script>
+    async function loadBookings() {
+      try {
+        const response = await fetch('http://localhost:8080/bookings');
+        const data = await response.json();
+
+        const tbody = document.getElementById('bookingsBody');
+        const emptyMsg = document.getElementById('empty');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+          emptyMsg.style.display = 'block';
+          return;
+        }
+        emptyMsg.style.display = 'none';
+
+        data.forEach(b => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${b.name}</td>
+            <td>${b.phno}</td>
+            <td>${b.room_no}</td>
+            <td>${b.room_type}</td>
+            <td>${b.check_in_date}</td>
+            <td>${b.check_out_date}</td>
+            <td><button class="cancel-btn" data-name="${b.name}" data-phno="${b.phno}" data-room="${b.room_no}">Cancel</button></td>
+          `;
+          tbody.appendChild(row);
+        });
+
+        document.querySelectorAll('.cancel-btn').forEach(btn => {
+          btn.addEventListener('click', async function() {
+            const name = this.dataset.name;
+            const phno = this.dataset.phno;
+            const room = this.dataset.room;
+
+            if (!confirm(`Cancel booking for ${name}, room ${room}?`)) return;
+
+            try {
+              const response = await fetch(
+                `http://localhost:8080/bookings?name=${encodeURIComponent(name)}&phno=${phno}&room=${room}`,
+                { method: 'DELETE' }
+              );
+              const data = await response.json();
+              if (data.success) {
+                loadBookings();
+              } else {
+                alert(data.message || 'Cancel failed.');
+              }
+            } catch (err) {
+              alert('Could not reach server.');
+            }
+          });
+        });
+
+      } catch (err) {
+        document.getElementById('empty').style.display = 'block';
+        document.getElementById('empty').textContent = 'Could not reach server. Is Server.java running?';
+      }
+    }
+
+    loadBookings();
+</script>
+
+</body>
+</html>
